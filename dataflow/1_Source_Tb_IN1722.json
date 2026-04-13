@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_SrcType_IN1722",
+						"referenceName": "SqlServerTable1",
 						"type": "DatasetReference"
 					},
 					"name": "SourceIN1722"
@@ -37,7 +37,8 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SourceIN1722",
+				"     query: 'select * from authors',",
+				"     format: 'query') ~> SourceIN1722",
 				"source(output(",
 				"          AUTHOR_NAME as string,",
 				"          AUTHOR_PHONE as string,",
