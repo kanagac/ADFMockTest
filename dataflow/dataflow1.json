@@ -11,7 +11,17 @@
 					"name": "target"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				},
+				{
+					"name": "sink3"
+				}
+			],
 			"transformations": [
 				{
 					"name": "cleansrc"
@@ -24,6 +34,18 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -34,14 +56,30 @@
 				"src derive() ~> cleansrc",
 				"target derive() ~> transformedtgt",
 				"cleansrc, transformedtgt join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 split(isNull(),",
 				"     ERROR_FUNCTION('!isNull() && '),",
-				"     ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(NEW, UPDATED, INSERT, DEFAULT)"
+				"     ERROR_FUNCTION('!isNull() && '),",
+				"     disjoint: false) ~> split1@(NEW, UPDATED, INSERT, DEFAULT)",
+				"split1@NEW derive() ~> derivedColumn1",
+				"split1@UPDATED derive() ~> derivedColumn2",
+				"split1@INSERT derive() ~> derivedColumn3",
+				"derivedColumn2 alterRow(updateIf(true())) ~> alterRow1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink3"
 			]
 		}
 	}
