@@ -23,7 +23,8 @@
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -37,11 +38,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_SrcType_IN1722",
-						"type": "DatasetReference",
-						"parameters": {
-							"Table_name": " "
-						}
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
