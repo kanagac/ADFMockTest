@@ -1,0 +1,46 @@
+{
+	"name": "DS_DIM_STORES_TRG",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_TRG_SQLSERVER_IN1716",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Store_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Store_ID",
+				"type": "char"
+			},
+			{
+				"name": "Store_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Store_Address",
+				"type": "varchar"
+			},
+			{
+				"name": "Store_City",
+				"type": "varchar"
+			},
+			{
+				"name": "Store_State",
+				"type": "char"
+			},
+			{
+				"name": "Store_Zip",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "Moc_User11",
+			"table": "DIM_STORES_IN1716"
+		}
+	}
+}
