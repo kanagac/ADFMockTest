@@ -1,0 +1,43 @@
+{
+	"name": "PL_DIM_AUTHOR_IN1735",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SCD2_IN1735",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceAuthor": {
+								"TableName": "authors"
+							},
+							"TargetAuthor": {
+								"TableName": "DIM_AUTHOR_IN1735"
+							},
+							"sink1": {
+								"TableName": "DIM_AUTHOR_IN1735"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

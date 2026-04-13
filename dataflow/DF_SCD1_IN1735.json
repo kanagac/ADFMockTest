@@ -10,15 +10,65 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TARGET_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "target"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TARGET_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "transformations"
+				}
+			],
 			"scriptLines": [
+				"source(output(",
+				"          stor_id as string,",
+				"          stor_name as string,",
+				"          stor_address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1"
+				"     format: 'table') ~> target",
+				"source1 derive(stor_address = left(stor_address,4) + ',' + substring(stor_address, 4, length(stor_address)) + '.',",
+				"          state = case(state == 'ZA', 'Washington', case(state == 'CA', 'California', case(state == 'OR', 'Oregon', case(state == 'NY', 'New York', case(state == 'FL', 'Florida', 'N/A')))))) ~> transformations",
+				"transformations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          stor_id,",
+				"          stor_name,",
+				"          stor_address,",
+				"          city,",
+				"          state,",
+				"          zip",
+				"     )) ~> sink1"
 			]
 		}
 	}
