@@ -1,0 +1,45 @@
+{
+	"name": "Targetdb",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Target_SQL_IN1722",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "AUTHOR_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "AUTHOR_PHONE",
+				"type": "char"
+			},
+			{
+				"name": "AUTHOR_ADDRESS",
+				"type": "varchar"
+			},
+			{
+				"name": "AUTHOR_CITY",
+				"type": "varchar"
+			},
+			{
+				"name": "AUTHOR_STATE",
+				"type": "char"
+			},
+			{
+				"name": "AUTHOR_ZIP",
+				"type": "char"
+			},
+			{
+				"name": "AUTHOR_CONTRACT_STATUS",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "Moc_User8",
+			"table": "DIM_AUTHOR"
+		}
+	}
+}
