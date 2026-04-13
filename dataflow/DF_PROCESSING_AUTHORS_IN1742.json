@@ -1,0 +1,150 @@
+{
+	"name": "DF_PROCESSING_AUTHORS_IN1742",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_source_IN1742",
+						"type": "DatasetReference"
+					},
+					"name": "SourceAuthors"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TARGET_COMMON",
+						"type": "DatasetReference"
+					},
+					"name": "TargetAuthors"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_TARGET_COMMON",
+						"type": "DatasetReference"
+					},
+					"name": "targetAuthorsSink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TARGET_COMMON",
+						"type": "DatasetReference"
+					},
+					"name": "targetAuthorsSink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TARGET_COMMON",
+						"type": "DatasetReference"
+					},
+					"name": "TargetAuthorsSink3"
+				}
+			],
+			"transformations": [
+				{
+					"name": "processing"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "UPDATE"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          au_id as string,",
+				"          au_lname as string,",
+				"          au_fname as string,",
+				"          phone as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          contract as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceAuthors",
+				"source(output(",
+				"          Author_Name as string,",
+				"          Author_Phone as string,",
+				"          Author_Address as string,",
+				"          Author_city as string,",
+				"          Author_state as string,",
+				"          Author_zip as string,",
+				"          AU_Contract_Status as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TargetAuthors",
+				"SourceAuthors derive(Author_Name = concat(left(au_fname,1),au_fname),",
+				"          Author_Phone = concat('+91','-(',left(phone,3),')-','-(',substring(phone,4, 3),')-',right(phone, 4)),",
+				"          Author_Address = regexReplace(address,'[0-9]',','),",
+				"          Author_City = city,",
+				"          Author_State = upper(trim(state)),",
+				"          Author_Zip = iif(length(zip)<6,concat(concat(left(zip,3),'_',right(zip,3)),'0'),concat(left(zip,3),'_',right(zip,3)))\r",
+				",",
+				"          AU_Contract_Status = iif(contract == true(), 'Active', 'De-Active')) ~> processing",
+				"processing, TargetAuthors join(processing@Author_Name == TargetAuthors@Author_Name,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(city),",
+				"     !isNull(city) && processing@Author_City != TargetAuthors@Author_city,",
+				"     !isNull(city) && processing@Author_City != TargetAuthors@Author_city,",
+				"     disjoint: false) ~> split1@(NEW, UPDATE, INSERT, DEFAULT)",
+				"split1@NEW derive(start_date = currentDate(),",
+				"          end_date = 0) ~> derivedColumn1",
+				"split1@UPDATE derive(end_date = currentDate()) ~> derivedColumn2",
+				"split1@INSERT derive(start_date = currentDate(),",
+				"          end_date = 0) ~> derivedColumn3",
+				"derivedColumn2 alterRow(updateIf(true())) ~> UPDATE",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> targetAuthorsSink1",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> targetAuthorsSink2",
+				"UPDATE sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TargetAuthorsSink3"
+			]
+		}
+	}
+}
