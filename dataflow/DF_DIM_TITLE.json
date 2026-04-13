@@ -1,0 +1,100 @@
+{
+	"name": "DF_DIM_TITLE",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQLSERVER_TITLE",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 select(mapColumn(",
+				"          Title_id = title_id,",
+				"          Title_Desc = title,",
+				"          Type = type,",
+				"          Pub_id = pub_id,",
+				"          Price = price,",
+				"          Notes = notes,",
+				"          Publish_date = pubdate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(Title_id = concat(\"T-\",Title_id,\"-001\"),",
+				"          Title_Desc = concat(upper(Type),\"-\",upper(Title_Desc)),",
+				"          Type = concat(\"TT-\",initCap(Type)),",
+				"          Pub_id = upper(trim(Pub_id)),",
+				"          Price = case(Price < 2, Price + (0.3 * Price) ,Price + (0.1 * Price)),",
+				"          Notes = concat(left(Notes,3),right(Notes,2)),",
+				"          Publish_date = toDate(Publish_date, 'yyyy-MM-dd')) ~> derivedColumn1",
+				"derivedColumn1 keyGenerate(output(Title_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 select(mapColumn(",
+				"          Title_Key,",
+				"          Title_id,",
+				"          Title_Desc,",
+				"          Type,",
+				"          Pub_id,",
+				"          Price,",
+				"          Notes,",
+				"          Publish_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

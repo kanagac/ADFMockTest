@@ -1,0 +1,65 @@
+{
+	"name": "DS_SQLSERVER_TITLE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVERPUBS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "title_id",
+				"type": "varchar"
+			},
+			{
+				"name": "title",
+				"type": "varchar"
+			},
+			{
+				"name": "type",
+				"type": "char"
+			},
+			{
+				"name": "pub_id",
+				"type": "char"
+			},
+			{
+				"name": "price",
+				"type": "smallmoney",
+				"precision": 10,
+				"scale": 4
+			},
+			{
+				"name": "advance",
+				"type": "smallmoney",
+				"precision": 10,
+				"scale": 4
+			},
+			{
+				"name": "royalty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ytd_sales",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "notes",
+				"type": "varchar"
+			},
+			{
+				"name": "pubdate",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "titles"
+		}
+	}
+}
