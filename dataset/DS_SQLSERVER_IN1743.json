@@ -1,0 +1,17 @@
+{
+	"name": "DS_SQLSERVER_IN1743",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVER_IN1743",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}
