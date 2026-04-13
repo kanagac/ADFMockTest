@@ -7,6 +7,10 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": "Moc_User8",
+			"table": "DIM_TITLE"
+		}
 	}
 }
