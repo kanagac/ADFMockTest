@@ -1,0 +1,88 @@
+{
+	"name": "DF_PRACTICE_IN1720",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SRC_IN1720",
+						"type": "DatasetReference"
+					},
+					"name": "srctitles"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1720",
+						"type": "DatasetReference"
+					},
+					"name": "tgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "transformation"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> srctitles",
+				"srctitles derive(title_id = concat(\"T-\",title_id,\"001\"),",
+				"          Title_desc = concat(upper(type),\"-\",upper(title)),",
+				"          type = concat(\"TT-\",initCap(type)),",
+				"          pub_id = ltrim(upper(pub_id)),",
+				"          price = case(price<2, price+(price*0.3), price+(price*0.1)),",
+				"          notes = concat(substring(notes,1,3), substring(notes,-1,2))) ~> transformation",
+				"transformation select(mapColumn(",
+				"          title_id,",
+				"          type,",
+				"          pub_id,",
+				"          price,",
+				"          notes,",
+				"          pubdate,",
+				"          Title_desc",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          title_id,",
+				"          type,",
+				"          pub_id,",
+				"          price,",
+				"          notes,",
+				"          pubdate,",
+				"          Title_desc",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> tgt"
+			]
+		}
+	}
+}
