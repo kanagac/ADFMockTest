@@ -2,11 +2,6 @@
 	"name": "LS_TARGET_SQL_IN1733",
 	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
-		"parameters": {
-			"target": {
-				"type": "string"
-			}
-		},
 		"annotations": [],
 		"type": "SqlServer",
 		"typeProperties": {
@@ -16,7 +11,7 @@
 			"trustServerCertificate": false,
 			"authenticationType": "SQL",
 			"userName": "Moc_User5",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDVDOTJFN0EwLUE3ODktNDMxNS1BRDg4LUY3RjA5OEQ5MTI3Nl8zNWI2NWNhOC01MDJhLTQ2ZmItODI5MC00MzUyNDZhYWJkNzEiDQp9"
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDVDOTJFN0EwLUE3ODktNDMxNS1BRDg4LUY3RjA5OEQ5MTI3Nl8zNDUxY2M5ZS03MjY5LTQzZjEtOThhNy05NzEzMWIyYjE1NzkiDQp9"
 		}
 	}
 }
