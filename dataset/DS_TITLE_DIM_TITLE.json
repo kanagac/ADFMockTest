@@ -1,0 +1,52 @@
+{
+	"name": "DS_TITLE_DIM_TITLE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_TRG_SQLSERVER_IN1716",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Title_Key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Title_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Title_Desc",
+				"type": "varchar"
+			},
+			{
+				"name": "Type",
+				"type": "char"
+			},
+			{
+				"name": "Pub_ID",
+				"type": "char"
+			},
+			{
+				"name": "Price",
+				"type": "decimal",
+				"precision": 8,
+				"scale": 2
+			},
+			{
+				"name": "Notes",
+				"type": "varchar"
+			},
+			{
+				"name": "Publish_Date",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Moc_User11",
+			"table": "DIM_TITLE_IN1716"
+		}
+	}
+}
