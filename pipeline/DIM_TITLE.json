@@ -1,5 +1,5 @@
 {
-	"name": "DIM_AUTHOR",
+	"name": "DIM_TITLE",
 	"properties": {
 		"activities": [
 			{
@@ -16,8 +16,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_dim_author",
-						"type": "DataFlowReference"
+						"referenceName": "df_dim_Title",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourcetable": {
+								"tablename": "TITLES"
+							},
+							"sink1": {
+								"tablename": "DIM_TITLE"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
