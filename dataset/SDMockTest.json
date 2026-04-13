@@ -1,0 +1,24 @@
+{
+	"name": "SDMockTest",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SOURCE_SQL_IN1738",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo.",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
