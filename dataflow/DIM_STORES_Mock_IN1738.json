@@ -1,0 +1,122 @@
+{
+	"name": "DIM_STORES_Mock_IN1738",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SDMockTest",
+						"type": "DatasetReference"
+					},
+					"name": "sourceStores"
+				},
+				{
+					"dataset": {
+						"referenceName": "SS_Target_MoctTest",
+						"type": "DatasetReference"
+					},
+					"name": "TargetStores"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SS_Target_MoctTest",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "SS_Target_MoctTest",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DCStores"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "Ar"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          stor_id as string,",
+				"          stor_name as string,",
+				"          stor_address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceStores",
+				"source(output(",
+				"          Store_Key as integer,",
+				"          Store_id as string,",
+				"          Store_name as string,",
+				"          Store_address as string,",
+				"          Store_city as string,",
+				"          Store_state as string,",
+				"          Store_zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TargetStores",
+				"sourceStores derive(Store_id = stor_id,",
+				"          Store_name = stor_name,",
+				"          Store_address = concat(left(stor_address,3),', ',substring(stor_address, 4, length(stor_address)),'.'),",
+				"          Store_city = city,",
+				"          Store_state = case(city=='Washington', 'WA', case(city=='California', 'CA', case(city=='Oregon', 'OR', case(city=='NeWYork', 'NY', 'FL')))),",
+				"          Store_zip = right(concat('000000', zip),6)) ~> DCStores",
+				"DCStores, TargetStores join(stor_id == TargetStores@Store_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(TargetStores@Store_id),",
+				"     !isNull(TargetStores@Store_id) && DCStores@Store_address!=TargetStores@Store_address,",
+				"     disjoint: false) ~> split1@(insert, update)",
+				"split1@update alterRow(updateIf(1==1)) ~> Ar",
+				"split1@insert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Store_id = split1@insert@Store_id,",
+				"          Store_name = split1@insert@Store_name,",
+				"          Store_address = split1@insert@Store_address,",
+				"          Store_city = split1@insert@Store_city,",
+				"          Store_state = split1@insert@Store_state,",
+				"          Store_zip = split1@insert@Store_zip",
+				"     )) ~> sink1",
+				"Ar sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
+			]
+		}
+	}
+}
