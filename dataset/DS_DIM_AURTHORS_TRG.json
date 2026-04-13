@@ -1,0 +1,45 @@
+{
+	"name": "DS_DIM_AURTHORS_TRG",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_TRG_SQLSERVER_IN1716",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Author_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Author_Phone",
+				"type": "char"
+			},
+			{
+				"name": "Author_Address",
+				"type": "varchar"
+			},
+			{
+				"name": "Author_City",
+				"type": "varchar"
+			},
+			{
+				"name": "Author_State",
+				"type": "char"
+			},
+			{
+				"name": "Author_Zip",
+				"type": "char"
+			},
+			{
+				"name": "AU_Contract_Status",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "Moc_User11",
+			"table": "DIM_AUTHOR_IN1716"
+		}
+	}
+}
