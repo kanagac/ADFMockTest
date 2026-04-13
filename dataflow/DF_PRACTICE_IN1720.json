@@ -51,7 +51,7 @@
 				"          type = concat(\"TT-\",initCap(type)),",
 				"          pub_id = ltrim(upper(pub_id)),",
 				"          price = case(price<2, price+(price*0.3), price+(price*0.1)),",
-				"          notes = concat(substring(notes,1,3), substring(notes,-1,2))) ~> transformation",
+				"          notes = concat(substring(notes,1,3), substring(notes,-2,2))) ~> transformation",
 				"transformation select(mapColumn(",
 				"          title_id,",
 				"          type,",
