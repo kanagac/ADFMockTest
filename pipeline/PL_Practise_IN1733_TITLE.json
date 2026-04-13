@@ -1,0 +1,61 @@
+{
+	"name": "PL_Practise_IN1733_TITLE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_IN1733",
+						"type": "DatasetReference",
+						"parameters": {
+							"table_name": "titles"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_TGT_IN1733",
+						"type": "DatasetReference",
+						"parameters": {
+							"tgt_table": "DIM_TITLES_IN1733"
+						}
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
