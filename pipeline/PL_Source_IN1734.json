@@ -22,15 +22,11 @@
 							"Titles": {
 								"TableName": "titles"
 							},
+							"TARGET": {
+								"TableName": "Dim_Title_IN1734"
+							},
 							"DIMTITLES": {
 								"TableName": "Dim_Title_IN1734"
-							}
-						},
-						"linkedServiceParameters": {
-							"Titles": {
-								"schemaLinkedService": {
-									"TableName": "Dim_Title_IN1734"
-								}
 							}
 						}
 					},
