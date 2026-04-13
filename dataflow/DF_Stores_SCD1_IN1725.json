@@ -25,14 +25,14 @@
 						"referenceName": "DS_SQL_WRITE_IN1725",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sinkDIMSTORES"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_SQL_WRITE_IN1725",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "sinkDIMSTORES2"
 				}
 			],
 			"transformations": [
@@ -43,13 +43,13 @@
 					"name": "split1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "requiredtransformation"
 				},
 				{
 					"name": "alterRow1"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "requiredtransformations"
 				}
 			],
 			"scriptLines": [
@@ -92,10 +92,10 @@
 				" state=='FL','Florida'\r",
 				"  ),",
 				"          zip = lpad(zip, 6, '0'),",
-				"          stor_address = concat(stor_address,'.')) ~> derivedColumn1",
+				"          stor_address = concat(stor_address,'.')) ~> requiredtransformation",
 				"split1@updateexistingdata alterRow(updateIf(1==1)) ~> alterRow1",
-				"alterRow1 derive(stor_address = concat(stor_address,'.')) ~> derivedColumn2",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"alterRow1 derive(stor_address = concat(stor_address,'.')) ~> requiredtransformations",
+				"requiredtransformation sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -111,8 +111,8 @@
 				"          Store_city = city,",
 				"          Store_State = state,",
 				"          Store_zip = zip",
-				"     )) ~> sink1",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     )) ~> sinkDIMSTORES",
+				"requiredtransformations sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:false,",
@@ -125,7 +125,7 @@
 				"     mapColumn(",
 				"          Store_id = stor_id,",
 				"          Store_address",
-				"     )) ~> sink2"
+				"     )) ~> sinkDIMSTORES2"
 			]
 		}
 	}
