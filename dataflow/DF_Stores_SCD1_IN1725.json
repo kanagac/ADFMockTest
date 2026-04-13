@@ -1,0 +1,132 @@
+{
+	"name": "DF_Stores_SCD1_IN1725",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_READ_IN1725",
+						"type": "DatasetReference"
+					},
+					"name": "sourceStores"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_WRITE_IN1725",
+						"type": "DatasetReference"
+					},
+					"name": "dimStores"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_WRITE_IN1725",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_WRITE_IN1725",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          stor_id as string,",
+				"          stor_name as string,",
+				"          stor_address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceStores",
+				"source(output(",
+				"          Store_Key as integer,",
+				"          Store_id as string,",
+				"          Store_name as string,",
+				"          Store_address as string,",
+				"          Store_city as string,",
+				"          Store_State as string,",
+				"          Store_zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dimStores",
+				"sourceStores, dimStores lookup(stor_id == Store_id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(isNull(Store_id),",
+				"     (stor_id==Store_id)&&(stor_address!=Store_address),",
+				"     disjoint: false) ~> split1@(insertnewdata, updateexistingdata)",
+				"split1@insertnewdata derive(state = case(state == 'WA','Washington',\r",
+				"state=='CA','California',\r",
+				"state=='OR','Orgenia',\r",
+				" state=='NY','NewYork',\r",
+				" state=='FL','Florida'\r",
+				"  ),",
+				"          zip = lpad(zip, 6, '0'),",
+				"          stor_address = concat(stor_address,'.')) ~> derivedColumn1",
+				"split1@updateexistingdata alterRow(updateIf(1==1)) ~> alterRow1",
+				"alterRow1 derive(stor_address = concat(stor_address,'.')) ~> derivedColumn2",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Store_id = stor_id,",
+				"          Store_name = stor_name,",
+				"          Store_address = stor_address,",
+				"          Store_city = city,",
+				"          Store_State = state,",
+				"          Store_zip = zip",
+				"     )) ~> sink1",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['Store_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Store_id = stor_id,",
+				"          Store_address",
+				"     )) ~> sink2"
+			]
+		}
+	}
+}
