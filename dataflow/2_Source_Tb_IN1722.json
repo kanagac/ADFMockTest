@@ -1,0 +1,76 @@
+{
+	"name": "2_Source_Tb_IN1722",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Source_IN1722",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Targetdb",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Targetdb",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source(output(",
+				"          AUTHOR_NAME as string,",
+				"          AUTHOR_PHONE as string,",
+				"          AUTHOR_ADDRESS as string,",
+				"          AUTHOR_CITY as string,",
+				"          AUTHOR_STATE as string,",
+				"          AUTHOR_ZIP as string,",
+				"          AUTHOR_CONTRACT_STATUS as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source1 alterRow(updateIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          AUTHOR_NAME as string,",
+				"          AUTHOR_PHONE as string,",
+				"          AUTHOR_ADDRESS as string,",
+				"          AUTHOR_CITY as string,",
+				"          AUTHOR_STATE as string,",
+				"          AUTHOR_ZIP as string,",
+				"          AUTHOR_CONTRACT_STATUS as boolean",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
