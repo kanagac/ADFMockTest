@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Source_IN1722",
+						"referenceName": "DS_SrcType_IN1722",
 						"type": "DatasetReference"
 					},
 					"name": "source1"

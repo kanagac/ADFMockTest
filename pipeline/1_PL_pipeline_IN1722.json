@@ -1,5 +1,5 @@
 {
-	"name": "PL_pipeline_IN1722",
+	"name": "1_PL_pipeline_IN1722",
 	"properties": {
 		"activities": [
 			{
@@ -37,7 +37,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Source_IN1722",
+						"referenceName": "DS_SrcType_IN1722",
 						"type": "DatasetReference",
 						"parameters": {
 							"Table_name": " "
