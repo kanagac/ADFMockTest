@@ -1,0 +1,24 @@
+{
+	"name": "SS_Target_MoctTest",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_TARGET_SQL_1N1738",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Moc_User7",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}

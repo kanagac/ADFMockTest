@@ -1,0 +1,90 @@
+{
+	"name": "DIM_TITLE_Mock_IN1738",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SDMockTest",
+						"type": "DatasetReference"
+					},
+					"name": "TitleSourceIN1738"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SS_Target_MoctTest",
+						"type": "DatasetReference"
+					},
+					"name": "TargetTitle"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DCTitle"
+				},
+				{
+					"name": "SelectTitle"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TitleSourceIN1738",
+				"TitleSourceIN1738 derive(Title_ID = concat('T','-',right(title_id,3)),",
+				"          Title_Desc = concat(upper(title), upper(type)),",
+				"          Type = concat('TT-', initCap(type)),",
+				"          Pub_ID = trim(pub_id, ' '),",
+				"          Price = case(price<2, price*30, price*10),",
+				"          Notes = concat(left(notes,3), right(notes,3))\r",
+				",",
+				"          Publish_Date = toDate(pubdate)\r",
+				") ~> DCTitle",
+				"DCTitle select(mapColumn(",
+				"          Title_ID = DCTitle@Title_ID,",
+				"          Title_Desc,",
+				"          Type = DCTitle@Type,",
+				"          Pub_ID = DCTitle@Pub_ID,",
+				"          Price = DCTitle@Price,",
+				"          Notes = DCTitle@Notes,",
+				"          Publish_Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectTitle",
+				"SelectTitle sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Title_ID,",
+				"          Title_Desc,",
+				"          Type,",
+				"          Pub_ID,",
+				"          Price,",
+				"          Notes,",
+				"          Publish_Date",
+				"     )) ~> TargetTitle"
+			]
+		}
+	}
+}
