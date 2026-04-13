@@ -1,0 +1,72 @@
+{
+	"name": "DF_TITLES_IN1725",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_READ_IN1725",
+						"type": "DatasetReference"
+					},
+					"name": "titles"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_WRITE_IN1725",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "transformations"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> titles",
+				"titles derive(title_id = concat('T_',title_id,'-001'),",
+				"          title_desc = concat(upper(type), '-',upper(title)),",
+				"          type = concat('TT-',initCap(type)),",
+				"          pub_id = trim(pub_id),",
+				"          price = case(price<2, price*1.30, price*1.10),",
+				"          notes = concat(left(notes,3),right(notes, 2)),",
+				"          pubdate = toDate(pubdate)) ~> transformations",
+				"transformations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     mapColumn(",
+				"          Title_ID = title_id,",
+				"          Title_desc = title_desc,",
+				"          Type = type,",
+				"          Pub_ID = pub_id,",
+				"          Price = price,",
+				"          Notes = notes,",
+				"          Publish_date = pubdate",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
