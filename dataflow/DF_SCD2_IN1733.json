@@ -1,0 +1,45 @@
+{
+	"name": "DF_SCD2_IN1733",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_IN1733",
+						"type": "DatasetReference"
+					},
+					"name": "SOURCE"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1733",
+						"type": "DatasetReference"
+					},
+					"name": "TARGET"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SOURCE",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TARGET",
+				"SOURCE derive(hash = md5(expression)) ~> derivedColumn1",
+				"TARGET derive(hash = md5(expression)) ~> derivedColumn2"
+			]
+		}
+	}
+}
