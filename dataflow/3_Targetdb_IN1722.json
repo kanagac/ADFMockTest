@@ -32,8 +32,10 @@
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     limit: 100,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> sourcedb",
+				"     query: 'select * from titles',",
+				"     format: 'query') ~> sourcedb",
 				"source(output(",
 				"          AUTHOR_NAME as string,",
 				"          AUTHOR_PHONE as string,",
