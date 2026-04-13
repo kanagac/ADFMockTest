@@ -1,0 +1,66 @@
+{
+	"name": "DF_Author_IN1727",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "SourceAuthor"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_TGT_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "TargetAuthor"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "LeftJoin"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          au_id as string,",
+				"          au_lname as string,",
+				"          au_fname as string,",
+				"          phone as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          contract as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceAuthor",
+				"source(output(",
+				"          Author_Name as string,",
+				"          Author_Phone as string,",
+				"          Author_Address as string,",
+				"          Author_City as string,",
+				"          Author_State as string,",
+				"          Author_Zip as string,",
+				"          AU_Contract_Status as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TargetAuthor",
+				"SourceAuthor, TargetAuthor join(au_id == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoin"
+			]
+		}
+	}
+}

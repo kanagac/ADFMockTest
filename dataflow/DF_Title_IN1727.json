@@ -10,13 +10,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "SourceTitle"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_SQL_SERVER_TGT_IN1727",
-						"type": "DatasetReference"
-					},
-					"name": "TargetTitle"
 				}
 			],
 			"sinks": [
@@ -29,9 +22,6 @@
 				}
 			],
 			"transformations": [
-				{
-					"name": "LeftJoin"
-				},
 				{
 					"name": "DataTransformation"
 				},
@@ -54,27 +44,9 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SourceTitle",
-				"source(output(",
-				"          Title_Key as integer,",
-				"          Title_ID as string,",
-				"          Title_Desc as string,",
-				"          Type as string,",
-				"          Pub_ID as string,",
-				"          Price as decimal(19,4),",
-				"          Notes as string,",
-				"          Publish_Date as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> TargetTitle",
-				"SourceTitle, TargetTitle join(SourceTitle@title_id == TargetTitle@Title_ID,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> LeftJoin",
 				"TargetColumns derive(Title_ID = concat('T-', Title_ID, '-001'),",
 				"          Title_Desc = concat(\r",
 				"    upper(Type),\r",
@@ -94,13 +66,13 @@
 				"    substring(Notes, 0, 3),\r",
 				"    substring(Notes, length(Notes) - 2, 2)\r",
 				"    )) ~> DataTransformation",
-				"LeftJoin select(mapColumn(",
-				"          Title_ID = SourceTitle@title_id,",
+				"SourceTitle select(mapColumn(",
+				"          Title_ID = title_id,",
 				"          Title_Desc = title,",
-				"          Type = SourceTitle@type,",
-				"          Pub_ID = SourceTitle@pub_id,",
-				"          Price = SourceTitle@price,",
-				"          Notes = SourceTitle@notes,",
+				"          Type = type,",
+				"          Pub_ID = pub_id,",
+				"          Price = price,",
+				"          Notes = notes,",
 				"          Publish_Date = pubdate",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",

@@ -1,9 +1,9 @@
 {
-	"name": "PL_Title_IN1727",
+	"name": "PL_Author_IN1727",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Title_IN1727",
+				"name": "DF_Author",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,16 +16,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_Title_IN1727",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"SourceTitle": {
-								"table_name": "titles"
-							},
-							"LoadTarget": {
-								"table_name": "DIM_TITLE_IN1727"
-							}
-						}
+						"referenceName": "DF_Author_IN1727",
+						"type": "DataFlowReference"
 					},
 					"compute": {
 						"coreCount": 8,
