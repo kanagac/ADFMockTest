@@ -1,0 +1,127 @@
+{
+	"name": "PL_TITLES_IN1734",
+	"properties": {
+		"activities": [
+			{
+				"name": "DIMTITLES",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "title_id",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Title_ID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "type",
+									"type": "String",
+									"physicalType": "char"
+								},
+								"sink": {
+									"name": "Type",
+									"type": "String",
+									"physicalType": "char"
+								}
+							},
+							{
+								"source": {
+									"name": "pub_id",
+									"type": "String",
+									"physicalType": "char"
+								},
+								"sink": {
+									"name": "Pub_ID",
+									"type": "String",
+									"physicalType": "char"
+								}
+							},
+							{
+								"source": {
+									"name": "price",
+									"type": "Decimal",
+									"physicalType": "smallmoney",
+									"scale": 4,
+									"precision": 10
+								},
+								"sink": {
+									"name": "Price",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 4,
+									"precision": 8
+								}
+							},
+							{
+								"source": {
+									"name": "notes",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Notes",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Titles_IN1734",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "titles"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_DimTitles_IN1734",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Dim_title_IN1734"
+						}
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"name": "DS_Dim_Authors",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Target_IN1734",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Moc_User1",
+			"table": "Dim_Author_IN1734"
+		}
+	}
+}

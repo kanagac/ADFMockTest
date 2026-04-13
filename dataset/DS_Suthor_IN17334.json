@@ -1,0 +1,53 @@
+{
+	"name": "DS_Suthor_IN17334",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_IN1734",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "au_id",
+				"type": "varchar"
+			},
+			{
+				"name": "au_lname",
+				"type": "varchar"
+			},
+			{
+				"name": "au_fname",
+				"type": "varchar"
+			},
+			{
+				"name": "phone",
+				"type": "char"
+			},
+			{
+				"name": "address",
+				"type": "varchar"
+			},
+			{
+				"name": "city",
+				"type": "varchar"
+			},
+			{
+				"name": "state",
+				"type": "char"
+			},
+			{
+				"name": "zip",
+				"type": "char"
+			},
+			{
+				"name": "contract",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "authors"
+		}
+	}
+}
