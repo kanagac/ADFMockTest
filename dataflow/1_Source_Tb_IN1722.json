@@ -1,5 +1,5 @@
 {
-	"name": "Source_Tb_IN1722",
+	"name": "1_Source_Tb_IN1722",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -52,7 +52,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> Targetdb",
 				"SourceIN1722 alterRow(updateIf(true())) ~> alterRow1",
-				"alterRow1 sink(allowSchemaDrift: true,",
+				"Targetdb sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          AUTHOR_NAME as string,",
