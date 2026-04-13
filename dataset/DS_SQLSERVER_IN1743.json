@@ -2,7 +2,7 @@
 	"name": "DS_SQLSERVER_IN1743",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "LS_SQLSERVER_IN1743",
+			"referenceName": "LS_SQL_IN1743",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -12,6 +12,13 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
 	}
 }
