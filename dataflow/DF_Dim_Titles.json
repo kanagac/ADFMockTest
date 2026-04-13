@@ -16,7 +16,7 @@
 						"referenceName": "DS_DimTitles_IN1734",
 						"type": "DatasetReference"
 					},
-					"name": "DimTitles"
+					"name": "TARGET"
 				}
 			],
 			"sinks": [
@@ -25,7 +25,7 @@
 						"referenceName": "DS_DimTitles_IN1734",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "DIMTITLES"
 				}
 			],
 			"transformations": [
@@ -63,7 +63,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> DimTitles",
+				"     format: 'table') ~> TARGET",
 				"Titles derive(Title_ID = concat('T-',title_id,'-001'),",
 				"          Title_Desc = concat(upper(type),'-',upper(title)),",
 				"          Type = 'TT-'+initCap(type),",
@@ -87,7 +87,7 @@
 				"          Price = Transfprmations@Price,",
 				"          Notes = Transfprmations@Notes,",
 				"          Publish_Date = pubdate",
-				"     )) ~> sink1"
+				"     )) ~> DIMTITLES"
 			]
 		}
 	}
