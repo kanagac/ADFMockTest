@@ -62,7 +62,20 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> LoadingTarget"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          title_id,",
+				"          title,",
+				"          type,",
+				"          pub_id,",
+				"          price,",
+				"          advance,",
+				"          royalty,",
+				"          ytd_sales,",
+				"          notes,",
+				"          pubdate,",
+				"          title_desc",
+				"     )) ~> LoadingTarget"
 			]
 		}
 	}
