@@ -14,7 +14,7 @@
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "Moc_User13",
+			"schema": "dbo",
 			"table": {
 				"value": "@dataset().tablename",
 				"type": "Expression"
