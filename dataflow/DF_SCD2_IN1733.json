@@ -19,13 +19,44 @@
 					"name": "TARGET"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "exists1"
+				},
+				{
+					"name": "exists2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "exists3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -38,7 +69,37 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TARGET",
 				"SOURCE derive(hash = md5(expression)) ~> derivedColumn1",
-				"TARGET derive(hash = md5(expression)) ~> derivedColumn2"
+				"TARGET derive(hash = md5(expression)) ~> derivedColumn2",
+				"derivedColumn1 exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists1",
+				"derivedColumn2 exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists2",
+				"exists1 derive() ~> derivedColumn3",
+				"derivedColumn3 select(mapColumn(",
+				"          hash",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"exists2 exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists3",
+				"exists3 derive() ~> derivedColumn4",
+				"derivedColumn4 alterRow() ~> alterRow1",
+				"alterRow1 select(mapColumn(",
+				"          hash",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}

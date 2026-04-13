@@ -50,6 +50,12 @@
 				},
 				{
 					"name": "alterRow1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -86,7 +92,7 @@
 				"join1 split(isNull(stor_id),",
 				"     !isNull(stor_id),",
 				"     disjoint: false) ~> split1@(Insert, Update)",
-				"split1@Insert derive(Store_id = stor_id ,",
+				"split1@Insert derive(Store_id = stor_id,",
 				"          Store_name = stor_name,",
 				"          Store_address = stor_address,",
 				"          Store_city = city,",
@@ -99,7 +105,29 @@
 				"          Store_state = state,",
 				"          Store_zip = zip) ~> derivedColumn2",
 				"split1@Update alterRow(updateIf(1==1)) ~> alterRow1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 select(mapColumn(",
+				"          Store_Key,",
+				"          Store_id,",
+				"          Store_name,",
+				"          Store_address,",
+				"          Store_city,",
+				"          Store_state,",
+				"          Store_zip",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"derivedColumn2 select(mapColumn(",
+				"          Store_Key,",
+				"          Store_id,",
+				"          Store_name,",
+				"          Store_address,",
+				"          Store_city,",
+				"          Store_state,",
+				"          Store_zip",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -108,12 +136,13 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> TARGET2",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
-				"     updateable:false,",
+				"     updateable:true,",
 				"     upsertable:false,",
+				"     keys:['Store_Key'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> TARGET1"
