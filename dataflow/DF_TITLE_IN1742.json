@@ -1,0 +1,62 @@
+{
+	"name": "DF_TITLE_IN1742",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_source_IN1742",
+						"type": "DatasetReference"
+					},
+					"name": "SourceTitle"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_TARGET_COMMON",
+						"type": "DatasetReference"
+					},
+					"name": "LoadingTarget"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ProcessingTitle"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceTitle",
+				"SourceTitle derive(title_id = concat('T-',title_id,'-001'),",
+				"          title_desc = concat(upper(type), '-',upper(title)),",
+				"          type = concat('TT-', initCap(type)),",
+				"          pub_id = upper(trim(pub_id))) ~> ProcessingTitle",
+				"ProcessingTitle sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> LoadingTarget"
+			]
+		}
+	}
+}
