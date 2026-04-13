@@ -1,0 +1,88 @@
+{
+	"name": "DF_TITLE",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SRC_IN1723",
+						"type": "DatasetReference"
+					},
+					"name": "SrcTitle"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1723",
+						"type": "DatasetReference"
+					},
+					"name": "TgtTitle"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1723",
+						"type": "DatasetReference"
+					},
+					"name": "SNKTITLE"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Transformation"
+				},
+				{
+					"name": "FullOuterSrcTitleTgtTitle"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SrcTitle",
+				"source(output(",
+				"          Title_Key as integer,",
+				"          Title_ID as string,",
+				"          Title_Desc as string,",
+				"          Type as string,",
+				"          Pub_ID as string,",
+				"          Price as integer,",
+				"          Notes as string,",
+				"          Publish_Date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TgtTitle",
+				"FullOuterSrcTitleTgtTitle derive(title_id = concat('T-',SrcTitle@title_id,'-001')) ~> Transformation",
+				"SrcTitle, TgtTitle join(SrcTitle@title_id == TgtTitle@Title_ID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> FullOuterSrcTitleTgtTitle",
+				"Transformation sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SNKTITLE"
+			]
+		}
+	}
+}

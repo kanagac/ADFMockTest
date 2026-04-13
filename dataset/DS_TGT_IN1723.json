@@ -1,0 +1,24 @@
+{
+	"name": "DS_TGT_IN1723",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_TGT_SQL_SERVER_IN1723",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Moc_User4",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
