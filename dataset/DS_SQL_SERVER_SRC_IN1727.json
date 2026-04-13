@@ -1,0 +1,24 @@
+{
+	"name": "DS_SQL_SERVER_SRC_IN1727",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_SERVER_SRC_IN1727",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
+		}
+	}
+}

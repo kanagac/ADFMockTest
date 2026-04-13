@@ -1,0 +1,129 @@
+{
+	"name": "DF_Title_IN1727",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "SourceTitle"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_TGT_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "TargetTitle"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_TGT_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "LoadTarget"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LeftJoin"
+				},
+				{
+					"name": "DataTransformation"
+				},
+				{
+					"name": "TargetColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceTitle",
+				"source(output(",
+				"          Title_Key as integer,",
+				"          Title_ID as string,",
+				"          Title_Desc as string,",
+				"          Type as string,",
+				"          Pub_ID as string,",
+				"          Price as decimal(19,4),",
+				"          Notes as string,",
+				"          Publish_Date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TargetTitle",
+				"SourceTitle, TargetTitle join(SourceTitle@title_id == TargetTitle@Title_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoin",
+				"TargetColumns derive(Title_ID = concat('T-', Title_ID, '-001'),",
+				"          Title_Desc = concat(\r",
+				"    upper(Type),\r",
+				"    '-',\r",
+				"    upper(Title_Desc)\r",
+				"),",
+				"          Type = concat(\r",
+				"    'TT-',\r",
+				"    initCap(Type)\r",
+				"),",
+				"          Pub_ID = trim(upper(Pub_ID)),",
+				"          Price = case(\r",
+				"    Price < 2, Price * 0.30,\r",
+				"    Price * 0.10\r",
+				"),",
+				"          Notes = concat(\r",
+				"    substring(Notes, 0, 3),\r",
+				"    substring(Notes, length(Notes) - 2, 2)\r",
+				"    )) ~> DataTransformation",
+				"LeftJoin select(mapColumn(",
+				"          Title_ID = SourceTitle@title_id,",
+				"          Title_Desc = title,",
+				"          Type = SourceTitle@type,",
+				"          Pub_ID = SourceTitle@pub_id,",
+				"          Price = SourceTitle@price,",
+				"          Notes = SourceTitle@notes,",
+				"          Publish_Date = pubdate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TargetColumns",
+				"DataTransformation sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Title_ID,",
+				"          Title_Desc,",
+				"          Type,",
+				"          Pub_ID,",
+				"          Price,",
+				"          Notes,",
+				"          Publish_Date",
+				"     )) ~> LoadTarget"
+			]
+		}
+	}
+}
