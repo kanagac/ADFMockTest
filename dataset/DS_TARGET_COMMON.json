@@ -14,7 +14,7 @@
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "systechtraining.database.windows.net",
+			"schema": "Moc_User13",
 			"table": {
 				"value": "@dataset().tablename",
 				"type": "Expression"
