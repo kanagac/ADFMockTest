@@ -1,5 +1,5 @@
 {
-	"name": "DS_SQL_READ",
+	"name": "DS_SQL_READ_IN1725",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_SQL_SERVER",
