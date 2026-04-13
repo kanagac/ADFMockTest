@@ -1,0 +1,24 @@
+{
+	"name": "DS_SRC_PUBS_IN1716",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SRC_SQLSERVER_IN1716",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
+		}
+	}
+}
