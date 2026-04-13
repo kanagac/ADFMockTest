@@ -5,19 +5,105 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "DS_SQLSERVER_IN1743",
+						"type": "DatasetReference"
+					},
+					"name": "source"
 				},
 				{
-					"name": "source2"
+					"dataset": {
+						"referenceName": "DS_SQLSERVER_IN1743",
+						"type": "DatasetReference"
+					},
+					"name": "target"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQLSERVER_IN1743",
+						"type": "DatasetReference"
+					},
+					"name": "srcsink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQLSERVER_IN1743",
+						"type": "DatasetReference"
+					},
+					"name": "targetsink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "Update"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source2"
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> target",
+				"source, select1 join(stor_id == tgt_Store_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
+				"target select(mapColumn(",
+				"          tgt_Store_Key = Store_Key,",
+				"          tgt_Store_id = Store_id,",
+				"          tgt_Store_name = Store_name,",
+				"          tgt_Store_address = Store_address,",
+				"          tgt_Store_city = Store_city,",
+				"          tgt_Store_state = Store_state,",
+				"          tgt_Store_zip = Store_zip",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join split(isNull(tgt_Store_id),",
+				"     !isNull(tgt_Store_id) && stor_address!=tgt_Store_address,",
+				"     disjoint: false) ~> Update@(insert, update)",
+				"Update@insert derive(state = replace('WA', 'Washington', stor_address)\r",
+				"\r",
+				"\r",
+				",",
+				"          zip = concat('00','Store_zip')) ~> derivedColumn1",
+				"Update@update alterRow(updateIf(1==1)) ~> alterRow1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> srcsink",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> targetsink"
 			]
 		}
 	}
