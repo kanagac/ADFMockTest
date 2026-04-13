@@ -10,19 +10,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "source"
-				},
+				}
+			],
+			"sinks": [
 				{
 					"dataset": {
 						"referenceName": "DS_SQLSERVER_IN1743",
 						"type": "DatasetReference"
 					},
-					"name": "target"
+					"name": "sink1"
 				}
 			],
-			"sinks": [],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -42,12 +43,29 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source",
-				"source(allowSchemaDrift: true,",
+				"source select(mapColumn(",
+				"          title_id,",
+				"          title,",
+				"          type,",
+				"          pub_id,",
+				"          price,",
+				"          advance,",
+				"          royalty,",
+				"          ytd_sales,",
+				"          notes,",
+				"          pubdate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> target",
-				"source derive(title = ERROR_FUNCTION(''),",
-				"          title_type = CONCAT(UPPER(type),UPPER(title))) ~> derivedColumn1"
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
