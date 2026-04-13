@@ -1,0 +1,24 @@
+{
+	"name": "DS_source_IN1742",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_ssms_common",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
