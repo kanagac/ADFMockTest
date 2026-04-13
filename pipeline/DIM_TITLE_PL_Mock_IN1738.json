@@ -1,0 +1,40 @@
+{
+	"name": "DIM_TITLE_PL_Mock_IN1738",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_TITLE_IN1738",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DIM_TITLE_Mock_IN1738",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TitleSourceIN1738": {
+								"tablename": "titles"
+							},
+							"TargetTitle": {
+								"tablename": "DIM_TITLE"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
