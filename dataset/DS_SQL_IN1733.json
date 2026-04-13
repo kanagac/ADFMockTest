@@ -1,0 +1,23 @@
+{
+	"name": "DS_SQL_IN1733",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SOURCE_SQL_IN1733",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
+		}
+	}
+}

@@ -1,0 +1,123 @@
+{
+	"name": "DF_SCD1_IN1733",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_IN1733",
+						"type": "DatasetReference"
+					},
+					"name": "SOURCE"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1733",
+						"type": "DatasetReference"
+					},
+					"name": "TARGET"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1733",
+						"type": "DatasetReference"
+					},
+					"name": "TARGET2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TGT_IN1733",
+						"type": "DatasetReference"
+					},
+					"name": "TARGET1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          stor_id as string,",
+				"          stor_name as string,",
+				"          stor_address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SOURCE",
+				"source(output(",
+				"          Store_Key as integer,",
+				"          Store_id as string,",
+				"          Store_name as string,",
+				"          Store_address as string,",
+				"          Store_city as string,",
+				"          Store_state as string,",
+				"          Store_zip as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TARGET",
+				"SOURCE, TARGET join(stor_id == Store_id,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(stor_id),",
+				"     !isNull(stor_id),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert derive(Store_id = stor_id ,",
+				"          Store_name = stor_name,",
+				"          Store_address = stor_address,",
+				"          Store_city = city,",
+				"          Store_state = state,",
+				"          Store_zip = zip) ~> derivedColumn1",
+				"alterRow1 derive(Store_id = stor_id,",
+				"          Store_name = stor_name,",
+				"          Store_address = stor_address,",
+				"          Store_city = city,",
+				"          Store_state = state,",
+				"          Store_zip = zip) ~> derivedColumn2",
+				"split1@Update alterRow(updateIf(1==1)) ~> alterRow1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TARGET2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TARGET1"
+			]
+		}
+	}
+}
