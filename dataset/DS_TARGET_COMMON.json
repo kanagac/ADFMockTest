@@ -14,7 +14,7 @@
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "dbo",
+			"schema": "systechtraining.database.windows.net",
 			"table": {
 				"value": "@dataset().tablename",
 				"type": "Expression"
