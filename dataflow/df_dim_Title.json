@@ -1,0 +1,82 @@
+{
+	"name": "df_dim_Title",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Source",
+						"type": "DatasetReference"
+					},
+					"name": "sourcetable"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Target",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourcetable",
+				"filter1 derive(Title_id = concat('T-',title_id,'-001'),",
+				"          Title_desc = concat(upper(type),'-',upper(title)),",
+				"          Type = concat('TT-',initCap(type)),",
+				"          Pub_ID = upper(trim(pub_id)),",
+				"          Price = case(price < 2, price * (30/100), price * (30/100)),",
+				"          Notes = concat(left(notes, 3),right(notes,2))) ~> derivedColumn1",
+				"sourcetable filter(year(pubdate) < 2021) ~> filter1",
+				"derivedColumn1 select(mapColumn(",
+				"          Title_desc,",
+				"          Type = derivedColumn1@Type,",
+				"          Pub_ID = derivedColumn1@Pub_ID,",
+				"          Price = derivedColumn1@Price,",
+				"          Notes = derivedColumn1@Notes,",
+				"          Publish_Date = pubdate,",
+				"          Title_id = derivedColumn1@Title_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
