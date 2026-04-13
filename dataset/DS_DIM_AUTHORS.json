@@ -1,0 +1,16 @@
+{
+	"name": "DS_DIM_AUTHORS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_TGT_SQLSERVER",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_AUTHOR"
+		}
+	}
+}
