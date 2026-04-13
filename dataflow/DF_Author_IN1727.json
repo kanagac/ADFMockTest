@@ -19,10 +19,52 @@
 					"name": "TargetAuthor"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_TGT_IN1727",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "LeftJoin"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "select4"
 				}
 			],
 			"scriptLines": [
@@ -42,24 +84,119 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SourceAuthor",
 				"source(output(",
+				"          Author_Id as string,",
 				"          Author_Name as string,",
 				"          Author_Phone as string,",
 				"          Author_Address as string,",
 				"          Author_City as string,",
 				"          Author_State as string,",
 				"          Author_Zip as string,",
-				"          AU_Contract_Status as boolean",
+				"          AU_Contract_Status as boolean,",
+				"          Start_Date as timestamp,",
+				"          End_Date as timestamp,",
+				"          Is_Active as boolean",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TargetAuthor",
-				"SourceAuthor, TargetAuthor join(au_id == ERROR_FUNCTION(''),",
+				"SourceAuthor, TargetAuthor join(au_id == Author_Id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> LeftJoin"
+				"     broadcast: 'auto')~> LeftJoin",
+				"LeftJoin filter(isNull(Author_Id) && city != Author_City) ~> filter1",
+				"LeftJoin filter(isNull(Author_Id) || city != Author_City) ~> filter2",
+				"filter2 select(mapColumn(",
+				"          au_id,",
+				"          au_lname = au_fname,",
+				"          au_fname = au_lname,",
+				"          phone,",
+				"          address,",
+				"          city,",
+				"          state,",
+				"          zip,",
+				"          contract",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(start_date = currentDate(),",
+				"          end_date = toDate('9999-01-31', 'yyyy-MM-dd'),",
+				"          is_active = 1,",
+				"          Author_Name = concat(\r",
+				"    au_fname,\r",
+				"    au_lname\r",
+				")) ~> derivedColumn1",
+				"filter1 select(mapColumn(",
+				"          au_id,",
+				"          au_lname,",
+				"          au_fname,",
+				"          phone,",
+				"          address,",
+				"          city,",
+				"          state,",
+				"          zip,",
+				"          contract",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 derive(end_date = currentDate(),",
+				"          is_active = 0,",
+				"          Author_Name = concat(\r",
+				"    au_fname,\r",
+				"    au_lname\r",
+				")) ~> derivedColumn2",
+				"select4 alterRow(updateIf(true())) ~> alterRow1",
+				"derivedColumn1 select(mapColumn(",
+				"          au_lname = Author_Name,",
+				"          au_fname = phone,",
+				"          phone = address,",
+				"          address,",
+				"          city,",
+				"          state,",
+				"          zip,",
+				"          contract,",
+				"          start_date,",
+				"          end_date,",
+				"          is_active",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"derivedColumn2 select(mapColumn(",
+				"          au_id = Author_Name,",
+				"          phone,",
+				"          address,",
+				"          city,",
+				"          state,",
+				"          zip,",
+				"          contract,",
+				"          end_date,",
+				"          is_active",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"select3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2) ~> sink1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['au_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> sink2"
 			]
 		}
 	}
