@@ -1,0 +1,96 @@
+{
+	"name": "DF_DIM_TITLE_IN1735",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SOURCE_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "sourceTitle"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TARGET_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "sinkTarget"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RenamingColumn"
+				},
+				{
+					"name": "DataTransformations"
+				},
+				{
+					"name": "DateFilter"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceTitle",
+				"sourceTitle select(mapColumn(",
+				"          SRC_title_id = title_id,",
+				"          SRC_title = title,",
+				"          SRC_type = type,",
+				"          SRC_pub_id = pub_id,",
+				"          SRC_price = price,",
+				"          SRC_advance = advance,",
+				"          SRC_royalty = royalty,",
+				"          SRC_ytd_sales = ytd_sales,",
+				"          SRC_notes = notes,",
+				"          SRC_pubdate = pubdate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenamingColumn",
+				"DateFilter derive(SRC_title_id = ('T-' + SRC_title_id + '-001')\r",
+				"\r",
+				",",
+				"          SRC_Title_Decs = upper(SRC_type) + '-' + upper(SRC_title),",
+				"          SRC_type = 'TT-' + initCap(SRC_type),",
+				"          SRC_pub_id = upper(trim(SRC_pub_id, ' ')),",
+				"          SRC_price = case(SRC_price < 2, SRC_price + (SRC_price*0.30), SRC_price + (SRC_price*0.10)),",
+				"          SRC_notes = left(SRC_notes,2) + right(SRC_notes, 3)) ~> DataTransformations",
+				"RenamingColumn filter(year(SRC_pubdate) < 2021) ~> DateFilter",
+				"DataTransformations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Title_ID = SRC_title_id,",
+				"          Type = SRC_type,",
+				"          Pub_ID = SRC_pub_id,",
+				"          Price = SRC_price,",
+				"          Notes = SRC_notes,",
+				"          Publish_Date = SRC_pubdate,",
+				"          Title_Desc = SRC_Title_Decs",
+				"     )) ~> sinkTarget"
+			]
+		}
+	}
+}

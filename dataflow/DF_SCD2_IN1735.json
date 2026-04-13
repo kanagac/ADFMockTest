@@ -1,0 +1,111 @@
+{
+	"name": "DF_SCD2_IN1735",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SOURCE_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "sourceAuthor"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TARGET_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "TargetAuthor"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TARGET_IN1735",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "tranformations"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          au_id as string,",
+				"          au_lname as string,",
+				"          au_fname as string,",
+				"          phone as string,",
+				"          address as string,",
+				"          city as string,",
+				"          state as string,",
+				"          zip as string,",
+				"          contract as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceAuthor",
+				"source(output(",
+				"          Author_Name as string,",
+				"          Author_Phone as string,",
+				"          Author_Address as string,",
+				"          Author_City as string,",
+				"          Authour_State as string,",
+				"          Author_Zip as string,",
+				"          AU_Contract_Status as boolean,",
+				"          Start_Date as date,",
+				"          End_Date as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TargetAuthor",
+				"sourceAuthor select(mapColumn(",
+				"          SRC_au_id = au_id,",
+				"          SRC_au_lname = au_lname,",
+				"          SRC_au_fname = au_fname,",
+				"          SRC_phone = phone,",
+				"          SRC_address = address,",
+				"          SRC_city = city,",
+				"          SRC_state = state,",
+				"          SRC_zip = zip,",
+				"          SRC_contract = contract",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(SRC_Author_name = left(SRC_au_lname,1) + '-' + left(SRC_au_fname,1),",
+				"          SRC_phone = '+91' + '(' +left(trim(SRC_phone, ' '),3) + ')-' + '(' + substring(trim(SRC_phone, ' '), 4, 3) +')-' + '(' +  substring(trim(SRC_phone, ' '), 7, 4) + ')',",
+				"          SRC_state = upper(trim(SRC_state, ' ')),",
+				"          SRC_AU_Contract_Status = iif(SRC_contract == true(), 'Active', 'De-Active'),",
+				"          SRC_Start_date = currentDate()) ~> tranformations",
+				"tranformations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Author_ID = SRC_au_id,",
+				"          Author_Phone = SRC_phone,",
+				"          Author_Address = SRC_address,",
+				"          Author_City = SRC_city,",
+				"          Authour_State = SRC_state,",
+				"          Author_Zip = SRC_zip,",
+				"          Author_Name = SRC_Author_name,",
+				"          AU_Contract_Status = SRC_AU_Contract_Status,",
+				"          Start_Date = SRC_Start_date",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
