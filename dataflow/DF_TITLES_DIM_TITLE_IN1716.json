@@ -13,7 +13,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_TRG_MOCK_BOOTCAMP",
+						"referenceName": "DS_TITLE_DIM_TITLE",
 						"type": "DatasetReference"
 					},
 					"name": "DIMTITLESTrg"
@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DS_TRG_MOCK_BOOTCAMP",
+						"referenceName": "DS_TITLE_DIM_TITLE",
 						"type": "DatasetReference"
 					},
 					"name": "trgSink"
@@ -80,6 +80,16 @@
 				"     broadcast: 'auto')~> LEFTJOIN",
 				"LEFTJOIN sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          Title_Key as integer,",
+				"          Title_ID as string,",
+				"          Title_Desc as string,",
+				"          Type as string,",
+				"          Pub_ID as string,",
+				"          Price as decimal(8,2),",
+				"          Notes as string,",
+				"          Publish_Date as string",
+				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
