@@ -1,0 +1,24 @@
+{
+	"name": "DS_DimTitles_IN1734",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Target_IN1734",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"TableName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Moc_User1",
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	}
+}

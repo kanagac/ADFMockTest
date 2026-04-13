@@ -1,0 +1,94 @@
+{
+	"name": "DF_Dim_Titles",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Titles_IN1734",
+						"type": "DatasetReference"
+					},
+					"name": "Titles"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_DimTitles_IN1734",
+						"type": "DatasetReference"
+					},
+					"name": "DimTitles"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_DimTitles_IN1734",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Transfprmations"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Titles",
+				"source(output(",
+				"          Title_Key as integer,",
+				"          Title_ID as string,",
+				"          Title_Desc as string,",
+				"          Type as string,",
+				"          Pub_ID as string,",
+				"          Price as decimal(8,4),",
+				"          Notes as string,",
+				"          Publish_Date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimTitles",
+				"Titles derive(Title_ID = concat('T-',title_id,'-001'),",
+				"          Title_Desc = concat(upper(type),'-',upper(title)),",
+				"          Type = 'TT-'+initCap(type),",
+				"          Pub_ID = upper(trim(pub_id)),",
+				"          Price = iif(price<2, price+0.30, price+0.10),",
+				"          Notes = concat(left(notes,3),right(notes,2))) ~> Transfprmations",
+				"Transfprmations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Title_ID = Transfprmations@Title_ID,",
+				"          Title_Desc,",
+				"          Type = Transfprmations@Type,",
+				"          Pub_ID = Transfprmations@Pub_ID,",
+				"          Price = Transfprmations@Price,",
+				"          Notes = Transfprmations@Notes,",
+				"          Publish_Date = pubdate",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
