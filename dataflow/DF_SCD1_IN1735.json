@@ -62,12 +62,12 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          stor_id,",
-				"          stor_name,",
-				"          stor_address,",
-				"          city,",
-				"          state,",
-				"          zip",
+				"          Store_id = stor_id,",
+				"          Store_name = stor_name,",
+				"          Store_address = stor_address,",
+				"          Store_city = city,",
+				"          Store_state = state,",
+				"          Store_zip = zip",
 				"     )) ~> sink1"
 			]
 		}
