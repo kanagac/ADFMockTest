@@ -1,0 +1,24 @@
+{
+	"name": "DS_TARGET_COMMON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SSMS_TARGET_COMMON",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
