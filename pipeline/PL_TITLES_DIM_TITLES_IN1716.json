@@ -1,0 +1,41 @@
+{
+	"name": "PL_TITLES_DIM_TITLES_IN1716",
+	"properties": {
+		"description": "Implementing SCD2 logic and transformations",
+		"activities": [
+			{
+				"name": "DF_TITLES_DIM_TITLES_IN1716",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_TITLES_DIM_TITLE_IN1716",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TitlesSRC": {
+								"table_name": "titles"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "MOCK_TEST"
+		},
+		"annotations": []
+	}
+}
