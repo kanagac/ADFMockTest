@@ -1,0 +1,108 @@
+{
+	"name": "DF_TITLES_DIM_TITLE_IN1716",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SRC_PUBS_IN1716",
+						"type": "DatasetReference"
+					},
+					"name": "TitlesSRC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_TRG_MOCK_BOOTCAMP",
+						"type": "DatasetReference"
+					},
+					"name": "DIMTITLESTrg"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_TRG_MOCK_BOOTCAMP",
+						"type": "DatasetReference"
+					},
+					"name": "trgSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Transformations"
+				},
+				{
+					"name": "LEFTJOIN"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          title_id as string,",
+				"          title as string,",
+				"          type as string,",
+				"          pub_id as string,",
+				"          price as decimal(10,4),",
+				"          advance as decimal(10,4),",
+				"          royalty as integer,",
+				"          ytd_sales as integer,",
+				"          notes as string,",
+				"          pubdate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TitlesSRC",
+				"source(output(",
+				"          Title_Key as integer,",
+				"          Title_ID as string,",
+				"          Title_Desc as string,",
+				"          Type as string,",
+				"          Pub_ID as string,",
+				"          Price as decimal(8,2),",
+				"          Notes as string,",
+				"          Publish_Date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMTITLESTrg",
+				"TitlesSRC derive(Title_ID = iif(isNull(title_id),'Field Must be populated',concat('T-', title_id)),",
+				"          Title_Desc = iif(isNull(title) || isNull(type),'Title Not Found',concat(upper(type),'-',upper(title))),",
+				"          Type = iif(isNull(type),'Type Not Found',initCap(concat('TT-', type))),",
+				"          Pub_ID = iif(isNull(pub_id),'No Publisher Found',upper(trim(pub_id))),",
+				"          Price = case(price < 2,price+0.30,price+0.10),",
+				"          Notes = concat(substring(notes, 1, 3),left(notes,2))) ~> Transformations",
+				"Transformations, DIMTITLESTrg join(TitlesSRC@title_id == DIMTITLESTrg@Title_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTJOIN",
+				"LEFTJOIN sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          title,",
+				"          advance,",
+				"          royalty,",
+				"          ytd_sales,",
+				"          notes = TitlesSRC@notes,",
+				"          pubdate,",
+				"          Title_ID = Transformations@Title_ID,",
+				"          Title_Desc = Transformations@Title_Desc,",
+				"          Type = Transformations@Type,",
+				"          Pub_ID = Transformations@Pub_ID,",
+				"          Price = Transformations@Price,",
+				"          Notes = Transformations@Notes,",
+				"          Title_Key",
+				"     )) ~> trgSink"
+			]
+		}
+	}
+}
