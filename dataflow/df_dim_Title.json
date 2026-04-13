@@ -75,7 +75,16 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Title_desc,",
+				"          Type,",
+				"          Pub_ID,",
+				"          Price,",
+				"          Notes,",
+				"          Publish_Date,",
+				"          Title_id",
+				"     )) ~> sink1"
 			]
 		}
 	}
