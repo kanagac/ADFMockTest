@@ -1,5 +1,5 @@
 {
-	"name": "Source_IN1722",
+	"name": "DS_SrcType_IN1722",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Source_SQL_IN1722",

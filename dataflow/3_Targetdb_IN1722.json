@@ -1,0 +1,58 @@
+{
+	"name": "3_Targetdb_IN1722",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SrcType_IN1722",
+						"type": "DatasetReference"
+					},
+					"name": "sourcedb"
+				},
+				{
+					"dataset": {
+						"referenceName": "Targetdb",
+						"type": "DatasetReference"
+					},
+					"name": "Targetdb"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourcedb",
+				"source(output(",
+				"          AUTHOR_NAME as string,",
+				"          AUTHOR_PHONE as string,",
+				"          AUTHOR_ADDRESS as string,",
+				"          AUTHOR_CITY as string,",
+				"          AUTHOR_STATE as string,",
+				"          AUTHOR_ZIP as string,",
+				"          AUTHOR_CONTRACT_STATUS as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Targetdb",
+				"sourcedb alterRow() ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
