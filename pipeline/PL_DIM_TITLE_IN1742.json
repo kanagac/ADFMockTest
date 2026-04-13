@@ -17,7 +17,15 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_TITLE_IN1742",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SourceTitle": {
+								"tablename": "titles"
+							},
+							"LoadingTarget": {
+								"tablename": "DIM_TITLE_TARGET_IN1742"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
