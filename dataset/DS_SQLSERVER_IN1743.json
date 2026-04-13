@@ -2,7 +2,7 @@
 	"name": "DS_SQLSERVER_IN1743",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "LS_SQL_IN1743",
+			"referenceName": "LS_SQLTGT_IN1743",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
