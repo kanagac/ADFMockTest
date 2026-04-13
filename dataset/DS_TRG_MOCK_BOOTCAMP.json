@@ -15,10 +15,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "Moc_User11",
-			"table": {
-				"value": "@dataset().table_name",
-				"type": "Expression"
-			}
+			"table": "DIM_TITLE_IN1716"
 		}
 	}
 }
