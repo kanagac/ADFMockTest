@@ -24,6 +24,9 @@
 			"transformations": [
 				{
 					"name": "ProcessingTitle"
+				},
+				{
+					"name": "loadOnlyBefore2021"
 				}
 			],
 			"scriptLines": [
@@ -43,10 +46,14 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SourceTitle",
-				"SourceTitle derive(title_id = concat('T-',title_id,'-001'),",
+				"loadOnlyBefore2021 derive(title_id = concat('T-',title_id,'-001'),",
 				"          title_desc = concat(upper(type), '-',upper(title)),",
 				"          type = concat('TT-', initCap(type)),",
-				"          pub_id = upper(trim(pub_id))) ~> ProcessingTitle",
+				"          pub_id = upper(trim(pub_id)),",
+				"          price = iif(price<2,price+(price*0.3),price+(price*0.1)),",
+				"          notes = concat(notes,left(notes, 3),right(notes, 2)),",
+				"          pubdate = concat(toString(year(pubdate)),toString(month(pubdate)),toString(dayOfMonth(pubdate)))) ~> ProcessingTitle",
+				"SourceTitle filter(year(pubdate) <2021) ~> loadOnlyBefore2021",
 				"ProcessingTitle sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
