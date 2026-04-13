@@ -1,0 +1,46 @@
+{
+	"name": "PL_SCD1_IN1725",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Stores_SCD1_IN1725",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceStores": {
+								"table_name": "stores"
+							},
+							"dimStores": {
+								"Table_name": "DIM_STORES"
+							},
+							"sink1": {
+								"Table_name": "DIM_STORES"
+							},
+							"sink2": {
+								"Table_name": "DIM_STORES"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
